@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DemoHrManagerWpf.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,20 @@ namespace DemoHrManagerWpf
   /// </summary>
   public partial class MainWindow : Window
   {
+    // Bonne pratique de mettre les ViewModel dans la MainWindow car elles peuvent ainsi être accédées
+    private MainViewModel viewModel;
     public MainWindow()
     {
       InitializeComponent();
+      DataContext = viewModel = new MainViewModel();
+      this.Loaded += MainWindow_Loaded;
+    }
+
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+      // Bonne pratique de faire le chargement des données asynchrones
+      // dans une callback qui elle peut etre asynchrone contrairement au constructeur
+      await viewModel.LoadData();
     }
   }
 }

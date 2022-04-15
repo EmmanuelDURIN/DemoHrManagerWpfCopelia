@@ -1,13 +1,60 @@
-﻿<Window x:Class="DemoHrManagerWpf.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DemoHrManagerWpf"
+        xmlns:ViewModel="clr-namespace:DemoHrManagerWpf.ViewModel" xmlns:Converters="clr-namespace:DemoHrManagerWpf.Converters" x:Class="DemoHrManagerWpf.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" 
+        d:DataContext="{d:DesignInstance {x:Type ViewModel:MainViewModel}}">
+    <Window.Resources>
+        <Converters:AgeToBrushConverter x:Key="AgeToBrushConverter"/>
+        <DataTemplate x:Key="personItemTemplate">
+            <!--Dans le template, le DataContext est modifié c'est la Nème ligne de donnée-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center"><Run  Text="{Binding FirstName}"/><Run Text=" "/><Run FontWeight="Bold" Text="{Binding LastName}"  /></TextBlock>
+                <Border Grid.Column="2" 
+                        BorderBrush="Blue"
+                        BorderThickness="2"
+                        CornerRadius="3" Margin="10 3" Padding="3">
+                    <TextBlock Text="{Binding Age}" Foreground="{Binding Age, Converter={StaticResource AgeToBrushConverter}}"/>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
-        <local:UserControlPerson/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ProgressBar HorizontalAlignment="Left"
+                     IsIndeterminate="{Binding IsLoading}"
+                     Height="19" Margin="78,10,0,0" VerticalAlignment="Top" Width="232"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListBox ItemTemplate="{DynamicResource personItemTemplate}" 
+                 Margin="10" 
+                 HorizontalContentAlignment="Stretch"
+                 ItemsSource="{Binding People}" 
+                 SelectedItem="{Binding SelectedPerson}"/>
+            <GridSplitter Background="CadetBlue"
+                      Grid.Column="1"
+                      Width="10"
+                      HorizontalAlignment="Center" />
+            <local:UserControlPerson Grid.Column="2"
+                                 DataContext="{Binding SelectedPerson}"/>
+
+        </Grid>
 
     </Grid>
 </Window>
